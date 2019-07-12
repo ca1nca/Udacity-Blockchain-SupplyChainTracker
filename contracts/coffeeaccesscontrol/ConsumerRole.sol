@@ -13,7 +13,7 @@ contract ConsumerRole {
 
 
   // Define a struct 'consumers' by inheriting from 'Roles' library, struct Role
-  Roles.Role consumers private;
+  Roles.Role private consumers;
 
 
   // In the constructor make the address that deploys this contract the 1st consumer

@@ -5,14 +5,14 @@ import "./Roles.sol";
 
 // Define a contract 'DistributorRole' to manage this role - add, remove, check
 contract DistributorRole {
-  Roles.Role private distributors;
+  using Roles for Roles.Role;
 
   // Define 2 events, one for Adding, and other for Removing
   event DistributorAdded(address indexed account);
   event DistributorRemoved(address indexed account);
 
   // Define a struct 'distributors' by inheriting from 'Roles' library, struct Role
-  Roles.Role distributors private;
+  Roles.Role private distributors;
 
   // In the constructor make the address that deploys this contract the 1st distributor
   constructor() public {
@@ -37,7 +37,7 @@ contract DistributorRole {
 
   // Define a function 'renounceDistributor' to renounce this role
   function renounceDistributor() public {
-    _removeDistributor(account);
+    _removeDistributor(msg.sender);
   }
 
   // Define an internal function '_addDistributor' to add this role, called by 'addDistributor'

@@ -4,7 +4,7 @@ import "../coffeeaccesscontrol/RetailerRole.sol";
 import "../coffeeaccesscontrol/ConsumerRole.sol";
 
 // Define a contract 'Supplychain'
-contract SupplyChain {
+contract SupplyChain is RetailerRole, ConsumerRole {
 
   // Define 'owner'
   address owner;
@@ -106,37 +106,37 @@ contract SupplyChain {
   
   // Define a modifier that checks if an item.state of a upc is Packed
   modifier packed(uint _upc) {
-    require(items[_upc].itemState == State.Packed;
+    require(items[_upc].itemState == State.Packed);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is ForSale
   modifier forSale(uint _upc) {
-    require(items[_upc].itemState == State.ForSale;
+    require(items[_upc].itemState == State.ForSale);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Sold
   modifier sold(uint _upc) {
-    require(items[_upc].itemState == State.Sold;
+    require(items[_upc].itemState == State.Sold);
     _;
   }
   
   // Define a modifier that checks if an item.state of a upc is Shipped
   modifier shipped(uint _upc) {
-    require(items[_upc].itemState == State.Shipped;
+    require(items[_upc].itemState == State.Shipped);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Received
   modifier received(uint _upc) {
-    require(items[_upc].itemState == State.Received;
+    require(items[_upc].itemState == State.Received);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Purchased
   modifier purchased(uint _upc) {
-    require(items[_upc].itemState == State.Purchased;
+    require(items[_upc].itemState == State.Purchased);
     _;
   }
 
@@ -160,18 +160,22 @@ contract SupplyChain {
   function harvestItem(uint _upc, address _originFarmerID, string _originFarmName, string _originFarmInformation, string  _originFarmLatitude, string  _originFarmLongitude, string  _productNotes) public 
   {
     // Add the new item as part of Harvest
-    Item item = Item({
-        sku: this.sku(),
+    Item memory item = Item({
+        sku: sku,
         upc: _upc,
-        ownerID: this.owner(),
+        ownerID: owner,
         originFarmerID: _originFarmerID,
         originFarmName: _originFarmName,
         originFarmInformation: _originFarmInformation,
         originFarmLatitude: _originFarmLatitude,
         originFarmLongitude: _originFarmLongitude,
-        productID: this.sku()+_upc,
-        productNotes: _productNotes
-        itemState: this.defaultState()
+        productID: sku+_upc,
+        productNotes: _productNotes,
+        productPrice: 0,
+        itemState: defaultState,
+        distributorID: 0,
+        retailerID: 0,
+        consumerID: 0
     });
     items[_upc] = item;
     // Increment sku
@@ -185,7 +189,7 @@ contract SupplyChain {
   // Call modifier to check if upc has passed previous supply chain stage
   harvested(_upc) 
   // Call modifier to verify caller of this function
-  verifyCaller(items[_upc]._originFarmerID) 
+  verifyCaller(items[_upc].originFarmerID) 
   {
     // Update the appropriate fields
     items[_upc].itemState = State.Processed; 
@@ -198,7 +202,7 @@ contract SupplyChain {
   // Call modifier to check if upc has passed previous supply chain stage
   processed(_upc) 
   // Call modifier to verify caller of this function
-  verifyCaller(items[_upc]._originFarmerID) 
+  verifyCaller(items[_upc].originFarmerID) 
   {
     // Update the appropriate fields
     items[_upc].itemState = State.Packed;
@@ -211,7 +215,7 @@ contract SupplyChain {
   // Call modifier to check if upc has passed previous supply chain stage
   packed(_upc) 
   // Call modifier to verify caller of this function
-  verifyCaller(items[_upc]._originFarmerID) 
+  verifyCaller(items[_upc].originFarmerID) 
   {
     // Update the appropriate fields
     items[_upc].productPrice = _price;
@@ -237,7 +241,7 @@ contract SupplyChain {
     items[_upc].distributorID = msg.sender;
     items[_upc].itemState = State.Sold;
     // Transfer money to farmer
-    items[_upc].originFarmerID.transfer(msg.value)
+    items[_upc].originFarmerID.transfer(msg.value);
     // emit the appropriate event
     emit Sold(_upc);
   }
@@ -344,7 +348,7 @@ contract SupplyChain {
   productID = items[_upc].productID;
   productNotes = items[_upc].productNotes;
   productPrice = items[_upc].productPrice;
-  itemState = items[_upc].productState;
+  itemState = uint256(items[_upc].itemState);
   distributorID = items[_upc].distributorID;
   retailerID = items[_upc].retailerID;
   consumerID = items[_upc].consumerID;
