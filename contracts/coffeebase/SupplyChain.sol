@@ -241,7 +241,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
     items[_upc].distributorID = msg.sender;
     items[_upc].itemState = State.Sold;
     // Transfer money to farmer
-    items[_upc].originFarmerID.transfer(msg.value);
+    items[_upc].originFarmerID.transfer(items[_upc].productPrice);
     // emit the appropriate event
     emit Sold(_upc);
   }
