@@ -155,7 +155,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
     Item memory item = Item({
         sku: sku,
         upc: _upc,
-        ownerID: owner(),
+        ownerID: _originFarmerID,
         originFarmerID: _originFarmerID,
         originFarmName: _originFarmName,
         originFarmInformation: _originFarmInformation,
@@ -182,6 +182,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   harvested(_upc) 
   // Call modifier to verify caller of this function
   verifyCaller(items[_upc].originFarmerID) 
+
+  onlyFarmer
   {
     // Update the appropriate fields
     items[_upc].itemState = State.Processed; 
@@ -195,6 +197,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   processed(_upc) 
   // Call modifier to verify caller of this function
   verifyCaller(items[_upc].originFarmerID) 
+
+  onlyFarmer
   {
     // Update the appropriate fields
     items[_upc].itemState = State.Packed;
@@ -208,6 +212,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   packed(_upc) 
   // Call modifier to verify caller of this function
   verifyCaller(items[_upc].originFarmerID) 
+
+  onlyFarmer
   {
     // Update the appropriate fields
     items[_upc].productPrice = _price;
@@ -219,13 +225,15 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   // Define a function 'buyItem' that allows the disributor to mark an item 'Sold'
   // Use the above defined modifiers to check if the item is available for sale, if the buyer has paid enough, 
   // and any excess ether sent is refunded back to the buyer
-  function buyItem(uint _upc) public payable onlyDistributor 
+  function buyItem(uint _upc) public payable 
     // Call modifier to check if upc has passed previous supply chain stage
     forSale(_upc) 
     // Call modifer to check if buyer has paid enough
     paidEnough(items[_upc].productPrice) 
     // Call modifer to send any excess ether back to buyer
     checkValue(_upc) 
+
+    onlyDistributor
     {
     
     // Update the appropriate fields - ownerID, distributorID, itemState
@@ -245,6 +253,8 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
     sold(_upc) 
     // Call modifier to verify caller of this function
     verifyCaller(items[_upc].distributorID) 
+
+    onlyDistributor  
     {
     // Update the appropriate fields
     items[_upc].itemState = State.Shipped;
@@ -272,7 +282,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   // Use the above modifiers to check if the item is received
   function purchaseItem(uint _upc) public 
     // Call modifier to check if upc has passed previous supply chain stage
-    purchased(_upc) 
+    received(_upc)  
     // Access Control List enforced by calling Smart Contract / DApp
     onlyConsumer 
     {
