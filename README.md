@@ -12,9 +12,10 @@ The Roles library (built internally) was used in addition to the npm modules tru
 
 I do plan on uploading this DApp to the IPFS soon, but as of first submission, it is not available there.
 
-## Contract Address
+## Contract Address and Transaction Hash
 
-0x61747E15ddfF3B48B3b803a44821A25152Df871C
+Contract: 0x61747E15ddfF3B48B3b803a44821A25152Df871C
+Txn: 0x235eaba8943ec02f065171f73a4f38ffc686fca853ec56a16e7ad135e7bccbce
 
 ## Versions
 
